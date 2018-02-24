@@ -7,7 +7,14 @@ pub enum Maybe<T> {
   Nothing,
 }
 
-use self::Maybe::{Just, Nothing};
+
+pub use self::Maybe::{Just, Nothing};
+pub mod iter;
+pub mod default;
+pub mod cloned;
+
+pub mod test;
+
 
 impl<T> Maybe<T> {
 
@@ -180,19 +187,42 @@ impl<T> Maybe<T> {
     }
   }
 
-  /// Inserts val into Maybe if it is Nothing, then
-  /// returns a mutable reference to the contained value.
+  /// Returns a mutable reference to the contained value.
+  /// If Nothing, it first inserts the parameter val into the Maybe.
   pub fn get_or_insert(&mut self, val: T) -> &mut T {
+    // this fn may mutate the Maybe in place, so it takes mut ref to self
+    // and a value (to insert) of the same type as the inner value.
+
+    // We need to check wich variant the Maybe holds by matching `self`.
+    // `&mut self` as parameter in a method is a shorthand for:
+    // `self: &mut Maybe<T>`
+
+    // It's either doing a match directly on `self` and then having
+    // `&mut Just...` and `&mut Nothing...` patterns, or doing a match on
+    // dereferenced `self` and having a pleasent looking patterns.
+
+    // `*self` is a fn call `Deref::deref(self)` which returns a temporary of
+    // type `Maybe<T>` on which we match.
     match *self {
+      // is the value is present, we take a mut ref to it and return it
       Just(ref mut v) => v,
+      // if not, we mutate Maybe in place
       Nothing => {
+        // by using mem::replace
         //::std::mem::replace(self, Just(val));
+
+        // by derefing self and assigning it a new value
         *self = Just(val);
+
+        // now that Maybe definitly has a value, we can match `self` all over
+        // again or just use as_mut to get mut ref and than unwrap it:
         self.as_mut().expect("get_or_insert unwrapped Nothing")
+        // it can't fail, but nevertheless there's a tracking message
       }
     }
   }
 
+  // get_or_insert method for Option as is in the std:
   pub fn get_or_insert_std(&mut self, v: T) -> &mut T {
     match *self {
         Nothing => *self = Just(v),
@@ -225,32 +255,3 @@ impl<T> Maybe<T> {
 
 
 } // impl
-
-
-
-/*
-Default trait
-=============
-pub trait Default: Sized {
-    fn default() -> Self;
-}
-
-Default trait requires impl 1 method, default(), that takes nothing
-and returns some meaningful default value for specific type.
-
-In case of Maybe<T> that can be `Nothing` variant.
-
-To get default value for particulat type T, annotate variable:
-    let def: T = Default::default();
-
-or use turbofish syntax:
-    let def = Default::default::<T>();
-
-
-Default trait implementation:
-*/
-impl<T> Default for Maybe<T> {
-  fn default() -> Self {
-    Nothing
-  }
-}

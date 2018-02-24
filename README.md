@@ -1,14 +1,11 @@
-# Maybe type
+# Maybe
 
-- language: Rust
-- date: 2018-02-19
+- lang: Rust
+- date: 2017-12-11
 - type: exercise
-- desc: rewriting Option as Maybe type, for learning purposes
-- [Option source][opt] in std.
+- desc: `Option`'s doppelganger, the `Maybe` type (just for exercise)
 
-Ignoring that Option already exists, this is heavily commented and explained 
-implementation of Maybe type and its methods, doubling the utility of Option 
-type. For learning purposes only.
+Implementation of the `Maybe` type, exactly the same thing as the `Option`, purely as get-intimate-with-impl-details sort of exercise. Heavily commented.
 
 ```rust
 pub enum Maybe<T> {
@@ -17,16 +14,7 @@ pub enum Maybe<T> {
 }
 ```
 
-## Enums
-- Maybe<T>
-
-## Structs
-- Iter
-
-## Implemented traits
-- Iterator
-
-
+[Source code][opt] of `Option<T>` in `libcore`.
 
 
 [opt]: https://doc.rust-lang.org/nightly/src/core/option.rs.html

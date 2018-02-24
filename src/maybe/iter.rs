@@ -1,8 +1,34 @@
-use maybe::Maybe::{self, Nothing, Just};
+use super::Maybe::{self, Nothing, Just};
+
 
 impl<T> Maybe<T> {
+  /// Returns an iterator over the possibly contained value.
+  pub fn iter(&self) -> Iter<T> {
+    Iter {
+      inner: self.as_ref()
+    }
+  }
+} // impl
 
-  /*
+
+pub struct Iter<'a, T: 'a> {
+  inner: Maybe<&'a T>
+}
+
+impl<'a, T: 'a> Iterator for Iter<'a, T> {
+  type Item = &'a T;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    match self.inner.as_ref() {
+      Nothing => None,
+      Just(v) => Some(v),
+    }
+  }
+}
+
+
+/*
+impl<T> Maybe<T> {
   /// Returns an iterator over the possibly contained value.
   pub fn iter(&self) -> Iter<T> {
     Iter {
@@ -17,40 +43,8 @@ impl<T> Maybe<T> {
       }
     }
   }
-  */
-
-  /// Returns an iterator over the possibly contained value.
-  pub fn iter(&self) -> Iter<T> {
-    Iter {
-      inner: self.as_ref()
-    }
-  }
-
-
 } // impl
 
-
-pub struct Iter<'a, T: 'a> {
-  inner: Maybe<&'a T>
-}
-
-
-impl<'a, T: 'a> Iterator for Iter<'a, T> {
-  type Item = &'a T;
-
-  fn next(&mut self) -> Option<Self::Item> {
-    match self.inner.as_ref() {
-      Nothing => None,
-      Just(v) => Some(v),
-    }
-  }
-}
-
-
-
-
-
-/*
 #[derive(Clone, Debug)]
 struct Item<A> {
     opt: Option<A>

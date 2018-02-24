@@ -1,5 +1,5 @@
 [package]
-name = "optional"
+name = "maybe"
 version = "0.1.0"
 authors = ["mandober <ilicivan@zoho.com>"]
 

@@ -1,5 +1,65 @@
 #[cfg(test)]
-use maybe::Maybe::{self, Nothing, Just};
+use super::Maybe::{self, Nothing, Just};
+
+#[test]
+fn fuzzy() {
+  // &mut &&mut T
+  let ref mut juju: Maybe<&str> = Just("Alpha");
+  let ref mut ini = &juju;
+  assert_eq!(ini, &mut &&mut Maybe::Just::<&'static str>("Alpha"));
+  // match ***ini {
+  //     Just(v) => println!("{:?}", v),
+  //     Nothing => println!("Nothing"),
+  // }
+
+  let ref mut nick: u8 = 122;
+  let bob = &nick;
+  assert_eq!(bob, &nick);
+
+  let ref mut nick2: &u8 = &42;
+  let bob2: &&mut &u8 = &nick2;
+  assert_eq!(bob2, &nick2);
+
+  let ref mut ant: &'static str = "42";
+  let ref mut iny: &&mut &str = &ant;
+  assert_eq!(&iny, &&mut &&mut "42");
+  // let mut num = 323;
+  // let mref = &&mut &&mut &&num;
+}
+
+#[test]
+fn iter() {
+  let x = Just(4);
+  assert_eq!(x.iter().next(), Some(&4));
+}
+
+#[test]
+fn cloned() {
+  // cloned
+  let x = 12;
+  let opt_x = Just(&x);
+  assert_eq!(opt_x, Just(&12));
+  let cloned = opt_x.cloned();
+  assert_eq!(cloned, Just(12));
+
+  // cloned (mut)
+  let mut x = 12;
+  let opt_x = Just(&mut x);
+  assert_eq!(opt_x, Just(&mut 12));
+  let cloned = opt_x.cloned();
+  assert_eq!(cloned, Just(12));
+}
+
+#[test]
+fn unwrap_or_default() {
+  // unwrap_or_default
+  let nil: Maybe<u8> = Nothing;
+  let def: u8 = Default::default();
+  assert_eq!(nil.unwrap_or_default(), def);
+
+  let opt: Maybe<u8> = Just(6);
+  assert_eq!(opt.unwrap_or_default(), 6_u8);
+}
 
 #[test]
 fn inner() {
@@ -14,13 +74,6 @@ fn inner() {
   // in case the Maybe is Nothing
   let mapped: Maybe<usize> = opt_b.map(&closure);
   assert_eq!(mapped, Maybe::Nothing::<usize>);
-}
-
-#[test]
-fn iter() {
-  // maybeiter
-  let x = Just(4);
-  assert_eq!(x.iter().next(), Some(&4));
 }
 
 #[test]
@@ -126,7 +179,6 @@ fn as_ref() {
 }
 
 #[test]
-#[ignore]
 #[should_panic(expected = "failure")]
 fn unwrap_fails() {
   let nada: Maybe<&str> = Nothing;
