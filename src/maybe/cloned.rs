@@ -10,6 +10,7 @@ impl<'a, T> Maybe<&'a T> where T: Clone {
   }
 }
 
+
 impl<'a, T> Maybe<&'a mut T> where T: Clone {
   /// Maps Maybe<&mut T> to Maybe<T> by cloning the contents
   pub fn cloned(self) -> Maybe<T> {
